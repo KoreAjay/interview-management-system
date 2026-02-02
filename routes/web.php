@@ -21,24 +21,20 @@ use App\Http\Controllers\CandidateController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::middleware(['auth','role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class,'dashboard']);
-Route::resource('candidates', CandidateController::class);
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::resource('candidates', CandidateController::class);
+});
 
-    });
-
-Route::middleware(['auth','role:interviewer'])->group(function () {
-    Route::get('/interviewer/dashboard', function(){
+Route::middleware(['auth', 'role:interviewer'])->group(function () {
+    Route::get('/interviewer/dashboard', function () {
         return view('interviewer.dashboard');
     });
 });
 
-Route::middleware(['auth','role:candidate'])->group(function () {
-    Route::get('/candidate/dashboard', function(){
+Route::middleware(['auth', 'role:candidate'])->group(function () {
+    Route::get('/candidate/dashboard', function () {
         return view('candidate.dashboard');
     });
-
 });
-
-
