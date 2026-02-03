@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class CandidateController extends Controller
 {
@@ -71,24 +73,74 @@ class CandidateController extends Controller
     return view('candidates.edit', compact('candidate'));
 }
 
+public function profile()
+{
+    $user = auth()->user();
+    $candidate = Candidate::where('email', $user->email)->first();
+
+    return view('candidate.profile', compact('user', 'candidate'));
+}
+
 
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, Candidate $candidate)
+public function updateProfile(Request $request)
 {
     $request->validate([
         'name' => 'required',
         'email' => 'required|email',
-        'phone' => 'required',
+        'phone' => 'nullable',
+        'address' => 'nullable',
+        'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
     ]);
 
-    $candidate->update($request->all());
+    $user = auth()->user();
 
-    return redirect()->route('candidates.index')
-        ->with('success','Candidate updated');
+    // Update user table
+    $user->update([
+        'name' => $request->name,
+        'email' => $request->email,
+    ]);
+
+    // Get or create candidate safely (NO DB ERROR)
+    $candidate = Candidate::where('email', $user->email)->first();
+
+    if (!$candidate) {
+        $candidate = Candidate::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'status' => 'pending',
+        ]);
+    } else {
+        $candidate->update([
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
+    }
+
+    // Profile image
+    if ($request->hasFile('profile_image')) {
+        $path = $request->file('profile_image')->store('profiles', 'public');
+        $candidate->profile_image = $path;
+    }
+
+    // Resume
+    if ($request->hasFile('resume')) {
+        $file = $request->file('resume');
+        $filename = time().'_'.$file->getClientOriginalName();
+        $file->move(public_path('resumes'), $filename);
+        $candidate->resume = $filename;
+    }
+
+    $candidate->save();
+
+    return redirect()->route('candidate.dashboard')
+        ->with('success', 'Profile updated successfully');
 }
-
 
     /**
      * Remove the specified resource from storage.

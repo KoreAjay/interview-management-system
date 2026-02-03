@@ -8,16 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Candidate extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-    'name',
-    'email',
-    'phone',
-    'resume',
-    'status'
-];
+        'name',
+        'email',
+        'phone',
+        'address',
+        'resume',
+        'profile_image',
+        'status',
+    ];
 
-    public function interviews() {
-    return $this->hasMany(Interview::class);
-}
-
+    public function interviews()
+    {
+        return $this->hasMany(\App\Models\Interview::class);
+    }
 }

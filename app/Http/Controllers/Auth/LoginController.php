@@ -35,7 +35,7 @@ class LoginController extends Controller
             if($user->role=='candidate'){
                 return redirect('/candidate/dashboard');
             }
-
+    
             // return redirect('/candidate/dashboard');  //this line to work
         }
 
