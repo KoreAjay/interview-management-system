@@ -26,6 +26,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('admin.dashboard');
 
     Route::resource('candidates', CandidateController::class);
+    Route::resource('interviews', InterviewController::class);
+    Route::post(
+        '/candidates/{candidate}/status',
+        [CandidateController::class, 'updateStatus']
+    )->name('candidates.status');
+    Route::resource('interviews', InterviewController::class);
+    
+    Route::get('/admin/results', function () {
+    $candidates = Candidate::whereIn('status',['selected','rejected'])->get();
+    return view('admin.results', compact('candidates'));
+});
+
+
+
 });
 
 /*

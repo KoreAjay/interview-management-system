@@ -19,22 +19,22 @@ class InterviewController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-
-    $candidates = Candidate::all();
-    $interviewers = Interviewer::all();
-    return view('interviews.create', compact('candidates','interviewers'));
+public function create()
+{
+    return view('interviews.create', [
+        'candidates' => Candidate::all(),
+        'interviewers' => User::where('role','interviewer')->get()
+    ]);
 }
-
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+public function store(Request $request)
+{
+    Interview::create($request->all());
+    return redirect()->route('interviews.index')
+        ->with('success','Interview scheduled');
+}
 
     /**
      * Display the specified resource.

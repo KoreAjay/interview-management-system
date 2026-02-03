@@ -142,6 +142,15 @@ public function updateProfile(Request $request)
         ->with('success', 'Profile updated successfully');
 }
 
+public function updateStatus(Request $request, Candidate $candidate)
+{
+    $candidate->update([
+        'status' => $request->status
+    ]);
+
+    return back()->with('success', 'Status updated');
+}
+
     /**
      * Remove the specified resource from storage.
      */

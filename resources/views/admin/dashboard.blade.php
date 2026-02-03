@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -8,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card text-white shadow-lg"
-                 style="background: linear-gradient(135deg, #141E30, #243B55);">
+                style="background: linear-gradient(135deg, #141E30, #243B55);">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="mb-1">Admin Dashboard</h2>
@@ -24,25 +23,22 @@
     </div>
 
     @php
-        use App\Models\Candidate;
-        use App\Models\Interview;
+        $totalCandidates = \App\Models\Candidate::count();
+        $pendingCandidates = \App\Models\Candidate::where('status','pending')->count();
+        $selectedCandidates = \App\Models\Candidate::where('status','selected')->count();
+        $rejectedCandidates = \App\Models\Candidate::where('status','rejected')->count();
 
-        $totalCandidates = Candidate::count();
-        $pendingCandidates = Candidate::where('status','pending')->count();
-        $selectedCandidates = Candidate::where('status','selected')->count();
-        $rejectedCandidates = Candidate::where('status','rejected')->count();
-
-        $totalInterviews = Interview::count();
-        $completedInterviews = Interview::where('status','completed')->count();
+        $totalInterviews = \App\Models\Interview::count();
+        $completedInterviews = \App\Models\Interview::where('status','completed')->count();
     @endphp
 
     {{-- Stats Cards --}}
     <div class="row g-4 mb-4">
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 text-center">
+            <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <div class="fs-1 text-primary mb-2">👥</div>
+                    <div class="fs-1 text-primary">👥</div>
                     <h6>Total Candidates</h6>
                     <h3>{{ $totalCandidates }}</h3>
                 </div>
@@ -50,9 +46,9 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 text-center">
+            <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <div class="fs-1 text-warning mb-2">⏳</div>
+                    <div class="fs-1 text-warning">⏳</div>
                     <h6>Pending</h6>
                     <h3>{{ $pendingCandidates }}</h3>
                 </div>
@@ -60,9 +56,9 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 text-center">
+            <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <div class="fs-1 text-success mb-2">✅</div>
+                    <div class="fs-1 text-success">✅</div>
                     <h6>Selected</h6>
                     <h3>{{ $selectedCandidates }}</h3>
                 </div>
@@ -70,9 +66,9 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 text-center">
+            <div class="card shadow-sm border-0 text-center">
                 <div class="card-body">
-                    <div class="fs-1 text-danger mb-2">❌</div>
+                    <div class="fs-1 text-danger">❌</div>
                     <h6>Rejected</h6>
                     <h3>{{ $rejectedCandidates }}</h3>
                 </div>
@@ -84,14 +80,14 @@
     {{-- Interview Overview --}}
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card shadow border-0 h-100">
+            <div class="card shadow border-0">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Interview Overview</h5>
                 </div>
                 <div class="card-body">
                     <p>Total Interviews: <b>{{ $totalInterviews }}</b></p>
                     <p>Completed Interviews: <b>{{ $completedInterviews }}</b></p>
-                    <p>Scheduled Interviews: 
+                    <p>Scheduled Interviews:
                         <b>{{ $totalInterviews - $completedInterviews }}</b>
                     </p>
                 </div>
@@ -100,7 +96,7 @@
 
         {{-- Quick Actions --}}
         <div class="col-md-6">
-            <div class="card shadow border-0 h-100">
+            <div class="card shadow border-0">
                 <div class="card-header bg-white">
                     <h5 class="mb-0">Quick Actions</h5>
                 </div>
@@ -119,14 +115,8 @@
         </div>
     </div>
 
-    {{-- Footer --}}
-    <div class="row">
-        <div class="col-12 text-center text-muted">
-            <small>
-                Interview Management System © {{ date('Y') }}  
-                | Admin Panel
-            </small>
-        </div>
+    <div class="text-center text-muted">
+        <small>Interview Management System © {{ date('Y') }}</small>
     </div>
 
 </div>
