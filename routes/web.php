@@ -22,25 +22,23 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
+
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard');
 
     Route::resource('candidates', CandidateController::class);
     Route::resource('interviews', InterviewController::class);
-    Route::post(
-        '/candidates/{candidate}/status',
+
+    Route::post('/candidates/{candidate}/status',
         [CandidateController::class, 'updateStatus']
     )->name('candidates.status');
-    Route::resource('interviews', InterviewController::class);
-    
+
     Route::get('/admin/results', function () {
-    $candidates = Candidate::whereIn('status',['selected','rejected'])->get();
-    return view('admin.results', compact('candidates'));
+        $candidates = \App\Models\Candidate::whereIn('status', ['selected','rejected'])->get();
+        return view('admin.results', compact('candidates'));
+    })->name('admin.results');
 });
 
-
-
-});
 
 /*
 |--------------------------------------------------------------------------
