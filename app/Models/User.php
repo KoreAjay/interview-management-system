@@ -42,4 +42,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function interviewer()
+{
+    return $this->hasOne(\App\Models\Interviewer::class);
+}
+
 }

@@ -2,69 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\Interview;
 use App\Models\Candidate;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InterviewController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List interviews
      */
     public function index()
     {
-        //
+        $interviews = Interview::with(['candidate','interviewer'])
+            ->latest()
+            ->get();
+
+        return view('interviews.index', compact('interviews'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show schedule form
      */
-    public function create()
-    {
-        //
-
-    $candidates = Candidate::all();
-    $interviewers = Interviewer::all();
-    return view('interviews.create', compact('candidates','interviewers'));
+public function create()
+{
+    return view('interviews.create', [
+        'candidates'   => Candidate::all(),
+        'interviewers' => User::where('role', 'interviewer')->get()
+    ]);
 }
 
     /**
-     * Store a newly created resource in storage.
+     * Store interview
      */
     public function store(Request $request)
-    {
-        //
-    }
+{
+    $request->validate([
+        'candidate_id'   => 'required|exists:candidates,id',
+        'interviewer_id' => 'required|exists:users,id',
+        'date'           => 'required|date',
+        'time'           => 'required',
+        'round'          => 'required'
+    ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    Interview::create([
+        'candidate_id'   => $request->candidate_id,
+        'interviewer_id' => $request->interviewer_id,
+        'date'           => $request->date,
+        'time'           => $request->time,
+        'round'          => $request->round,
+        'status'         => 'scheduled'
+    ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    return redirect()->route('interviews.index')
+        ->with('success', 'Interview scheduled successfully');
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
