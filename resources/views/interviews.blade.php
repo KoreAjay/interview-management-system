@@ -1,20 +1,44 @@
-<form method="POST" action="{{ route('interviews.store') }}">
-@csrf
+<tbody class="divide-y divide-slate-50">
+@forelse($interviews as $interview)
+<tr class="table-row group">
 
-<select name="candidate_id" class="form-control mb-2">
-    @foreach($candidates as $c)
-        <option value="{{ $c->id }}">{{ $c->name }}</option>
-    @endforeach
-</select>
+    {{-- Candidate --}}
+    <td class="px-8 py-6">
+        <strong>{{ $interview->candidate->name ?? 'N/A' }}</strong>
+    </td>
 
-<select name="interviewer_id" class="form-control mb-2">
-    @foreach($interviewers as $i)
-        <option value="{{ $i->id }}">{{ $i->name }}</option>
-    @endforeach
-</select>
+    {{-- Interviewer --}}
+    <td class="px-6 py-6">
+        {{ $interview->interviewer?->user?->name ?? 'Not Assigned' }}
+    </td>
 
-<input type="date" name="date" class="form-control mb-2">
-<input type="text" name="round" placeholder="Technical / HR" class="form-control mb-2">
+    {{-- Date --}}
+    <td class="px-6 py-6">
+        {{ \Carbon\Carbon::parse($interview->date)->format('d M Y') }}
+        <br>
+        <small class="text-slate-400">
+            {{ \Carbon\Carbon::parse($interview->time)->format('h:i A') }}
+        </small>
+    </td>
 
-<button class="btn btn-primary">Schedule</button>
-</form>
+    {{-- Round --}}
+    <td class="px-6 py-6">
+        {{ $interview->round }}
+    </td>
+
+    {{-- Status --}}
+    <td class="px-6 py-6 text-center">
+        <span class="badge-pill {{ $interview->status === 'scheduled' ? 'badge-info' : 'badge-success' }}">
+            {{ ucfirst($interview->status) }}
+        </span>
+    </td>
+
+</tr>
+@empty
+<tr>
+    <td colspan="5" class="text-center py-10 text-slate-400">
+        No interviews scheduled yet.
+    </td>
+</tr>
+@endforelse
+</tbody>

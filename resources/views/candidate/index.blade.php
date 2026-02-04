@@ -3,9 +3,9 @@
 @section('content')
 <div class="container py-4">
 
-    <h3 class="mb-3">Manage Candidates</h3>
+    <h3 class="mb-4 fw-bold">Manage Candidates</h3>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0">
         <div class="card-body">
 
             <table class="table table-bordered align-middle">
@@ -16,7 +16,7 @@
                         <th>Phone</th>
                         <th>Resume</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th style="width:120px">Action</th>
                     </tr>
                 </thead>
 
@@ -46,16 +46,13 @@
                                     <select name="status"
                                             class="form-select form-select-sm"
                                             onchange="this.form.submit()">
-                                        <option value="pending"
-                                            {{ $candidate->status=='pending'?'selected':'' }}>
+                                        <option value="pending" {{ $candidate->status=='pending' ? 'selected' : '' }}>
                                             Pending
                                         </option>
-                                        <option value="selected"
-                                            {{ $candidate->status=='selected'?'selected':'' }}>
+                                        <option value="selected" {{ $candidate->status=='selected' ? 'selected' : '' }}>
                                             Selected
                                         </option>
-                                        <option value="rejected"
-                                            {{ $candidate->status=='rejected'?'selected':'' }}>
+                                        <option value="rejected" {{ $candidate->status=='rejected' ? 'selected' : '' }}>
                                             Rejected
                                         </option>
                                     </select>

@@ -47,5 +47,10 @@ class User extends Authenticatable
 {
     return $this->hasOne(\App\Models\Interviewer::class);
 }
+public function interviews()
+{
+    return $this->hasMany(Interview::class, 'interviewer_id');
+}
+
 
 }

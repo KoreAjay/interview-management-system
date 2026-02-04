@@ -14,8 +14,10 @@ class CandidateController extends Controller
     public function index()
     {
         $candidates = Candidate::latest()->get();
-        return view('candidate.index', compact('candidates')); // ✅ FIXED
+        return view('candidate.index', compact('candidates'));
     }
+
+
 
     /**
      * Admin: Create form
@@ -31,16 +33,16 @@ class CandidateController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'   => 'required',
-            'email'  => 'required|email|unique:candidates',
-            'phone'  => 'required',
+            'name' => 'required',
+            'email' => 'required|email|unique:candidates',
+            'phone' => 'required',
             'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $data = $request->only(['name','email','phone']);
+        $data = $request->only(['name', 'email', 'phone']);
 
         if ($request->hasFile('resume')) {
-            $filename = time().'_'.$request->resume->getClientOriginalName();
+            $filename = time() . '_' . $request->resume->getClientOriginalName();
             $request->resume->move(public_path('resumes'), $filename);
             $data['resume'] = $filename;
         }
@@ -78,12 +80,12 @@ class CandidateController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'name'          => 'required',
-            'email'         => 'required|email',
-            'phone'         => 'nullable',
-            'address'       => 'nullable',
+            'name' => 'required',
+            'email' => 'required|email',
+            'phone' => 'nullable',
+            'address' => 'nullable',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'resume'        => 'nullable|mimes:pdf,doc,docx|max:2048',
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
         ]);
 
         $user = auth()->user();
@@ -91,7 +93,7 @@ class CandidateController extends Controller
 
         // Update user
         $user->update([
-            'name'  => $request->name,
+            'name' => $request->name,
             'email' => $request->email,
         ]);
 
@@ -100,17 +102,17 @@ class CandidateController extends Controller
 
         if (!$candidate) {
             $candidate = Candidate::create([
-                'name'   => $request->name,
-                'email'  => $request->email,
-                'phone'  => $request->phone,
-                'address'=> $request->address,
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'address' => $request->address,
                 'status' => 'pending',
             ]);
         } else {
             $candidate->update([
-                'name'    => $request->name,
-                'email'   => $request->email,
-                'phone'   => $request->phone,
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
                 'address' => $request->address,
             ]);
         }
@@ -123,7 +125,7 @@ class CandidateController extends Controller
 
         // Resume
         if ($request->hasFile('resume')) {
-            $filename = time().'_'.$request->resume->getClientOriginalName();
+            $filename = time() . '_' . $request->resume->getClientOriginalName();
             $request->resume->move(public_path('resumes'), $filename);
             $candidate->resume = $filename;
         }

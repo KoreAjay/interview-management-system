@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
-{
+{       
     /**
      * The path to your application's "home" route.
      * Users will be redirected here after login.
      */
-    public const HOME = '/redirect';
+    public const HOME = '/redirect';        
 
     /**
      * Define your route model bindings, pattern filters,

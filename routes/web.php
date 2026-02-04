@@ -29,14 +29,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('candidates', CandidateController::class);
     Route::resource('interviews', InterviewController::class);
 
-    Route::post('/candidates/{candidate}/status',
+    Route::post(
+        '/candidates/{candidate}/status',
         [CandidateController::class, 'updateStatus']
     )->name('candidates.status');
 
-    Route::get('/admin/results', function () {
-        $candidates = \App\Models\Candidate::whereIn('status', ['selected','rejected'])->get();
-        return view('admin.results', compact('candidates'));
-    })->name('admin.results');
+    Route::get('/admin/results', [AdminController::class, 'results'])
+        ->name('admin.results');
+
 });
 
 
@@ -46,9 +46,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:interviewer'])->group(function () {
+
     Route::get('/interviewer/dashboard', function () {
         return view('interviewer.dashboard');
     })->name('interviewer.dashboard');
+
+    Route::get('/feedback/{interview}', [FeedbackController::class, 'create'])
+        ->name('feedback.create');
+
+    Route::post('/feedback/{interview}', [FeedbackController::class, 'store'])
+        ->name('feedback.store');
+});
+Route::middleware(['auth', 'role:interviewer'])->group(function () {
+
+    Route::get('/interviewer/dashboard', function () {
+        return view('interviewer.dashboard');
+    })->name('interviewer.dashboard');
+
+    Route::get('/feedback/{interview}', [FeedbackController::class, 'create'])
+        ->name('feedback.create');
+
+    Route::post('/feedback/{interview}', [FeedbackController::class, 'store'])
+        ->name('feedback.store');
 });
 
 /*

@@ -13,8 +13,19 @@ class AdminController extends Controller
         return view('admin.dashboard', [
             'candidates' => Candidate::count(),
             'interviews' => Interview::count(),
-            'selected' => Feedback::where('result','selected')->count(),
-            'rejected' => Feedback::where('result','rejected')->count(),
+            'selected' => Feedback::where('result', 'selected')->count(),
+            'rejected' => Feedback::where('result', 'rejected')->count(),
         ]);
+    }
+    public function results()
+    {
+        $candidates = Candidate::with([
+            'interviews.feedback',
+            'interviews.interviewer' // Removed .user if interviewer IS the user
+        ])
+            ->whereIn('status', ['selected', 'rejected'])
+            ->get();
+
+        return view('admin.results', compact('candidates'));
     }
 }

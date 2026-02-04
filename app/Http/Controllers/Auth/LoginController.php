@@ -25,19 +25,15 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect('/admin/dashboard');
-            }
+            return match ($user->role) {
+                'admin' => redirect()->route('admin.dashboard'),
+                'interviewer' => redirect()->route('interviewer.dashboard'),
+                'candidate' => redirect()->route('candidate.dashboard'),
+                default => redirect('/login'),
+            };
 
-            if ($user->role === 'interviewer') {
-                return redirect('/interviewer/dashboard');
-            }
-            if($user->role=='candidate'){
-                return redirect('/candidate/dashboard');
-            }
-    
-            // return redirect('/candidate/dashboard');  //this line to work
         }
+
 
         return back()->withErrors([
             'email' => 'Invalid credentials.',

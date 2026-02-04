@@ -1,51 +1,125 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Softmatric | Interview Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('content')
-<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="col-md-5">
-        <div class="card auth-card">
-            <div class="auth-header">
-                <h4 class="mb-0">{{ __('Welcome Back') }}</h4>
-                <small class="text-muted">Log in to your Interview Portal</small>
+    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hero-gradient {
+            background:
+                radial-gradient(at 0% 0%, rgba(16,185,129,.08), transparent 50%),
+                radial-gradient(at 100% 0%, rgba(51,65,85,.05), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16,185,129,.08), transparent 50%);
+        }
+        .glass-card {
+            background: rgba(255,255,255,.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid #e2e8f0;
+        }
+        .hidden-auth { display:none; }
+    </style>
+</head>
+
+<body class="hero-gradient min-h-screen flex items-center justify-center px-6">
+
+<div class="w-full max-w-5xl grid lg:grid-cols-2 gap-14 items-center">
+
+    <!-- LEFT CONTENT -->
+    <div class="hidden lg:block space-y-6">
+        <h1 class="text-6xl font-extrabold text-slate-900">
+            Build the Future of <span class="text-emerald-500">Technology</span>
+        </h1>
+        <p class="text-xl text-slate-500">
+            Internal Interview Management Portal for Softmatric.
+        </p>
+    </div>
+
+    <!-- AUTH CARD -->
+    <div class="relative">
+
+        {{-- LOGIN --}}
+        <div id="login-card" class="glass-card rounded-3xl overflow-hidden shadow-xl">
+            <div class="px-10 py-8 border-b">
+                <h3 class="text-2xl font-extrabold">Welcome Back</h3>
+                <p class="text-slate-500 text-sm">Login to your dashboard</p>
             </div>
 
-            <div class="card-body p-4 p-md-5">
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
+            <form method="POST" action="{{ route('login') }}" class="p-10 space-y-6">
+                @csrf
 
-                    <div class="mb-4">
-                        <label for="email" class="form-label text-muted small uppercase fw-bold">{{ __('Email Address') }}</label>
-                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required placeholder="name@company.com">
-                        @error('email')
-                            <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
-                        @enderror
-                    </div>
+                <input type="email" name="email" required placeholder="Email"
+                       class="w-full px-5 py-4 rounded-xl border">
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label text-muted small uppercase fw-bold">{{ __('Password') }}</label>
-                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required placeholder="••••••••">
-                    </div>
+                <input type="password" name="password" required placeholder="Password"
+                       class="w-full px-5 py-4 rounded-xl border">
 
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                            <label class="form-check-label small" for="remember">{{ __('Remember Me') }}</label>
-                        </div>
-                        @if (Route::has('password.request'))
-                            <a class="small text-decoration-none" href="{{ route('password.request') }}">{{ __('Forgot Password?') }}</a>
-                        @endif
-                    </div>
+                <label class="flex items-center text-sm">
+                    <input type="checkbox" name="remember" class="mr-2"> Remember me
+                </label>
 
-                    <button type="submit" class="btn btn-primary btn-auth w-100 mb-3">
-                        {{ __('Sign In') }}
+                <button class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">
+                    Sign In
+                </button>
+
+                <p class="text-center text-sm">
+                    No account?
+                    <button type="button" onclick="toggleAuth('register')" class="text-emerald-600 font-bold">
+                        Create one
                     </button>
-                    
-                    <p class="text-center small text-muted">
-                        Don't have an account? <a href="{{ route('register') }}" class="text-decoration-none fw-bold">Create one</a>
-                    </p>
-                </form>
-            </div>
+                </p>
+            </form>
         </div>
+
+        {{-- REGISTER --}}
+        <div id="register-card" class="glass-card rounded-3xl overflow-hidden shadow-xl hidden-auth">
+            <div class="px-10 py-8 border-b">
+                <h3 class="text-2xl font-extrabold">Create Account</h3>
+                <p class="text-slate-500 text-sm">Candidate registration</p>
+            </div>
+
+            <form method="POST" action="{{ route('register') }}" class="p-10 space-y-5">
+                @csrf
+
+                <input type="text" name="name" required placeholder="Full Name"
+                       class="w-full px-5 py-4 rounded-xl border">
+
+                <input type="email" name="email" required placeholder="Email"
+                       class="w-full px-5 py-4 rounded-xl border">
+
+                <input type="password" name="password" required placeholder="Password"
+                       class="w-full px-5 py-4 rounded-xl border">
+
+                <input type="password" name="password_confirmation" required placeholder="Confirm Password"
+                       class="w-full px-5 py-4 rounded-xl border">
+
+                <button class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold">
+                    Register
+                </button>
+
+                <p class="text-center text-sm">
+                    Already have an account?
+                    <button type="button" onclick="toggleAuth('login')" class="text-emerald-600 font-bold">
+                        Sign in
+                    </button>
+                </p>
+            </form>
+        </div>
+
     </div>
 </div>
-@endsection
+
+<script>
+    function toggleAuth(type) {
+        document.getElementById('login-card').classList.toggle('hidden-auth', type === 'register');
+        document.getElementById('register-card').classList.toggle('hidden-auth', type === 'login');
+    }
+</script>
+
+</body>
+</html>
