@@ -14,6 +14,7 @@ class CandidateController extends Controller
     public function index()
     {
         $candidates = Candidate::latest()->get();
+<<<<<<< HEAD
         return view('candidate.index', compact('candidates'));
     }
 
@@ -28,11 +29,26 @@ class CandidateController extends Controller
     }
 
     /**
+=======
+        return view('candidate.index', compact('candidates')); // ✅ FIXED
+    }
+
+    /**
+     * Admin: Create form
+     */
+    public function create()
+    {
+        return view('candidate.create'); // ✅ FIXED
+    }
+
+    /**
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
      * Admin: Store candidate
      */
     public function store(Request $request)
     {
         $request->validate([
+<<<<<<< HEAD
             'name' => 'required',
             'email' => 'required|email|unique:candidates',
             'phone' => 'required',
@@ -43,6 +59,18 @@ class CandidateController extends Controller
 
         if ($request->hasFile('resume')) {
             $filename = time() . '_' . $request->resume->getClientOriginalName();
+=======
+            'name'   => 'required',
+            'email'  => 'required|email|unique:candidates',
+            'phone'  => 'required',
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        $data = $request->only(['name','email','phone']);
+
+        if ($request->hasFile('resume')) {
+            $filename = time().'_'.$request->resume->getClientOriginalName();
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
             $request->resume->move(public_path('resumes'), $filename);
             $data['resume'] = $filename;
         }
@@ -80,12 +108,21 @@ class CandidateController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
+<<<<<<< HEAD
             'name' => 'required',
             'email' => 'required|email',
             'phone' => 'nullable',
             'address' => 'nullable',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
+=======
+            'name'          => 'required',
+            'email'         => 'required|email',
+            'phone'         => 'nullable',
+            'address'       => 'nullable',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'resume'        => 'nullable|mimes:pdf,doc,docx|max:2048',
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
         ]);
 
         $user = auth()->user();
@@ -93,7 +130,11 @@ class CandidateController extends Controller
 
         // Update user
         $user->update([
+<<<<<<< HEAD
             'name' => $request->name,
+=======
+            'name'  => $request->name,
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
             'email' => $request->email,
         ]);
 
@@ -102,17 +143,30 @@ class CandidateController extends Controller
 
         if (!$candidate) {
             $candidate = Candidate::create([
+<<<<<<< HEAD
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'address' => $request->address,
+=======
+                'name'   => $request->name,
+                'email'  => $request->email,
+                'phone'  => $request->phone,
+                'address'=> $request->address,
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
                 'status' => 'pending',
             ]);
         } else {
             $candidate->update([
+<<<<<<< HEAD
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+=======
+                'name'    => $request->name,
+                'email'   => $request->email,
+                'phone'   => $request->phone,
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
                 'address' => $request->address,
             ]);
         }
@@ -125,7 +179,11 @@ class CandidateController extends Controller
 
         // Resume
         if ($request->hasFile('resume')) {
+<<<<<<< HEAD
             $filename = time() . '_' . $request->resume->getClientOriginalName();
+=======
+            $filename = time().'_'.$request->resume->getClientOriginalName();
+>>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
             $request->resume->move(public_path('resumes'), $filename);
             $candidate->resume = $filename;
         }
