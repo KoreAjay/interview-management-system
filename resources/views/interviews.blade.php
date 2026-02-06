@@ -1,44 +1,141 @@
 <tbody class="divide-y divide-slate-50">
-@forelse($interviews as $interview)
+
+@forelse($candidates as $candidate)
 <tr class="table-row group">
 
-    {{-- Candidate --}}
+    {{-- Candidate Name --}}
     <td class="px-8 py-6">
-        <strong>{{ $interview->candidate->name ?? 'N/A' }}</strong>
-    </td>
-
-    {{-- Interviewer --}}
-    <td class="px-6 py-6">
-        {{ $interview->interviewer?->user?->name ?? 'Not Assigned' }}
-    </td>
-
-    {{-- Date --}}
-    <td class="px-6 py-6">
-        {{ \Carbon\Carbon::parse($interview->date)->format('d M Y') }}
+        <strong>{{ $candidate->name }}</strong>
         <br>
-        <small class="text-slate-400">
-            {{ \Carbon\Carbon::parse($interview->time)->format('h:i A') }}
-        </small>
+        <small class="text-slate-400">{{ $candidate->email }}</small>
     </td>
 
-    {{-- Round --}}
+    {{-- Mobile --}}
     <td class="px-6 py-6">
-        {{ $interview->round }}
+        {{ $candidate->mobile ?? '-' }}
+    </td>
+
+    {{-- Position --}}
+    <td class="px-6 py-6">
+        {{ $candidate->position ?? '-' }}
+    </td>
+
+    {{-- Experience --}}
+    <td class="px-6 py-6">
+        {{ $candidate->experience ?? 0 }} Years
+    </td>
+
+    {{-- Resume --}}
+    <td class="px-6 py-6">
+        @if($candidate->resume)
+            <a href="{{ asset('resumes/'.$candidate->resume) }}"
+               target="_blank"
+               class="text-blue-600 underline">
+               View
+            </a>
+        @else
+            <span class="text-slate-400">N/A</span>
+        @endif
     </td>
 
     {{-- Status --}}
     <td class="px-6 py-6 text-center">
-        <span class="badge-pill {{ $interview->status === 'scheduled' ? 'badge-info' : 'badge-success' }}">
-            {{ ucfirst($interview->status) }}
+        <span class="badge-pill badge-info">
+            Pending
         </span>
     </td>
 
+    {{-- Schedule Button --}}
+    <td class="px-8 py-6 text-right">
+
+        <a href="{{ route('interviews.create', $candidate->id) }}"
+           class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-600 transition">
+
+            Schedule Interview
+
+        </a>
+
+    </td>
+
 </tr>
+
 @empty
 <tr>
-    <td colspan="5" class="text-center py-10 text-slate-400">
-        No interviews scheduled yet.
+    <td colspan="7" class="text-center py-10 text-slate-400">
+        No Pending Candidates Found
     </td>
 </tr>
 @endforelse
+
+</tbody>
+
+<tbody class="divide-y divide-slate-50">
+
+@forelse($candidates as $candidate)
+<tr class="table-row group">
+
+    {{-- Candidate Name --}}
+    <td class="px-8 py-6">
+        <strong>{{ $candidate->name }}</strong>
+        <br>
+        <small class="text-slate-400">{{ $candidate->email }}</small>
+    </td>
+
+    {{-- Mobile --}}
+    <td class="px-6 py-6">
+        {{ $candidate->mobile ?? '-' }}
+    </td>
+
+    {{-- Position --}}
+    <td class="px-6 py-6">
+        {{ $candidate->position ?? '-' }}
+    </td>
+
+    {{-- Experience --}}
+    <td class="px-6 py-6">
+        {{ $candidate->experience ?? 0 }} Years
+    </td>
+
+    {{-- Resume --}}
+    <td class="px-6 py-6">
+        @if($candidate->resume)
+            <a href="{{ asset('resumes/'.$candidate->resume) }}"
+               target="_blank"
+               class="text-blue-600 underline">
+               View
+            </a>
+        @else
+            <span class="text-slate-400">N/A</span>
+        @endif
+    </td>
+
+    {{-- Status --}}
+    <td class="px-6 py-6 text-center">
+        <span class="badge-pill badge-info">
+            Pending
+        </span>
+    </td>
+
+    {{-- Schedule Button --}}
+    <td class="px-8 py-6 text-right">
+
+        <a href="{{ route('interviews.create', $candidate->id) }}"
+           class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-600 transition">
+
+            Schedule Interview
+
+        </a>
+
+    </td>
+
+</tr>
+
+@empty
+<tr>
+    <td colspan="7" class="text-center py-10 text-slate-400">
+        No Pending Candidates Found
+    </td>
+</tr>
+@endforelse
+
 </tbody>

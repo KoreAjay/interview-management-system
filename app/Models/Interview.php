@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Interview extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'candidate_id',
         'interviewer_id',
+        'mode',
+        'meeting_link',
         'date',
         'time',
         'round',
@@ -23,7 +23,7 @@ class Interview extends Model
         return $this->belongsTo(Candidate::class);
     }
 
-    // ✅ interviewer is a USER
+    // interviewer = USER
     public function interviewer()
     {
         return $this->belongsTo(User::class, 'interviewer_id');

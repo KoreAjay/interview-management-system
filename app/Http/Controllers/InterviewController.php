@@ -2,65 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Interview;
-use App\Models\Candidate;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Candidate;
+use App\Models\Interview;
+use App\Models\Interviewer;
+use App\Models\User;
 
 class InterviewController extends Controller
 {
-    /**
-     * List interviews
-     */
+    /* Show Pending Candidates */
     public function index()
     {
-        $interviews = Interview::with(['candidate', 'interviewer'])
-            ->latest()
-            ->get();
+        $candidates = Candidate::where('status', 'pending')->get();
 
-        return view('interviews.index', compact('interviews'));
+        return view('interviews.index', compact('candidates'));
     }
 
-
-
-
-
-
-    /**
-     * Show schedule form
-     */
-    public function create()
+    /* Schedule Form */
+    public function create($candidate_id)
     {
-        return view('interviews.create', [
-            'candidates' => Candidate::all(),
-            'interviewers' => User::where('role', 'interviewer')->get()
-        ]);
+        $candidate = Candidate::findOrFail($candidate_id);
+
+        // Fetch users with interviewer role
+        $interviewers = User::where('role', 'interviewer')->get();
+
+        return view('interviews.create', compact('candidate', 'interviewers'));
     }
 
-    /**
-     * Store interview
-     */
+    /* Store Interview */
     public function store(Request $request)
     {
         $request->validate([
-            'candidate_id' => 'required|exists:candidates,id',
-            'interviewer_id' => 'required|exists:users,id',
+            'candidate_id' => 'required',
+            'interviewer_id' => 'required',
+            'round' => 'required',
+            'mode' => 'required',
             'date' => 'required|date',
-            'time' => 'required',
-            'round' => 'required'
+            'time' => 'required'
         ]);
 
         Interview::create([
             'candidate_id' => $request->candidate_id,
             'interviewer_id' => $request->interviewer_id,
+            'round' => $request->round,
+            'mode' => $request->mode,
             'date' => $request->date,
             'time' => $request->time,
-            'round' => $request->round,
             'status' => 'scheduled'
         ]);
 
-        return redirect()->route('interviews.index')
-            ->with('success', 'Interview scheduled successfully');
+        return redirect()
+            ->route('interviews.index')
+            ->with('success', 'Interview Scheduled');
     }
-
 }

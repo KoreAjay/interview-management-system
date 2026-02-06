@@ -33,4 +33,15 @@ class FeedbackController extends Controller
         return redirect()->route('interviewer.dashboard')
             ->with('success', 'Feedback submitted successfully');
     }
+    public function updates()
+{
+    $interviews = Interview::with([
+        'candidate',
+        'interviewer',
+        'feedback'
+    ])->latest()->get();
+
+    return view('admin.interview-updates', compact('interviews'));
+}
+
 }

@@ -9,213 +9,103 @@ use Illuminate\Support\Facades\Storage;
 class CandidateController extends Controller
 {
     /**
-     * Admin: List candidates
+     * Admin: List Candidates
      */
     public function index()
     {
-        $candidates = Candidate::latest()->get();
-<<<<<<< HEAD
+        $candidates = Candidate::where('status','pending')->latest()->get();
         return view('candidate.index', compact('candidates'));
     }
 
-
-
     /**
-     * Admin: Create form
+     * Admin: Show Create Form
      */
     public function create()
     {
-        return view('candidate.create'); // ✅ FIXED
+        return view('candidate.create');
     }
 
     /**
-=======
-        return view('candidate.index', compact('candidates')); // ✅ FIXED
-    }
-
-    /**
-     * Admin: Create form
+     * Admin: Store Candidate
      */
-    public function create()
-    {
-        return view('candidate.create'); // ✅ FIXED
+   public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:candidates,email',
+    ]);
+
+    $resumeName = null;
+
+    if ($request->hasFile('resume')) {
+        $resumeName = time().'.'.$request->resume->extension();
+        $request->resume->move(public_path('resumes'), $resumeName);
     }
 
+    Candidate::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'mobile' => $request->mobile,
+        'position' => $request->position,
+        'experience' => $request->experience,
+        'current_company' => $request->current_company,
+        'notice_period' => $request->notice_period,
+        'current_ctc' => $request->current_ctc,
+        'expected_ctc' => $request->expected_ctc,
+        'location' => $request->location,
+        'resume' => $resumeName,
+        'status' => 'pending',
+        'applied_at' => now(),
+    ]);
+
+    return redirect()
+        ->route('candidates.index')
+        ->with('success','Candidate Added Successfully');
+}
+
+    
     /**
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-     * Admin: Store candidate
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-<<<<<<< HEAD
-            'name' => 'required',
-            'email' => 'required|email|unique:candidates',
-            'phone' => 'required',
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
-        ]);
-
-        $data = $request->only(['name', 'email', 'phone']);
-
-        if ($request->hasFile('resume')) {
-            $filename = time() . '_' . $request->resume->getClientOriginalName();
-=======
-            'name'   => 'required',
-            'email'  => 'required|email|unique:candidates',
-            'phone'  => 'required',
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
-        ]);
-
-        $data = $request->only(['name','email','phone']);
-
-        if ($request->hasFile('resume')) {
-            $filename = time().'_'.$request->resume->getClientOriginalName();
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-            $request->resume->move(public_path('resumes'), $filename);
-            $data['resume'] = $filename;
-        }
-
-        $data['status'] = 'pending';
-
-        Candidate::create($data);
-
-        return redirect()->route('candidates.index')
-            ->with('success', 'Candidate added successfully');
-    }
-
-    /**
-     * Admin: Edit candidate
+     * Admin: Edit Candidate
      */
     public function edit(Candidate $candidate)
     {
-        return view('candidate.edit', compact('candidate')); // ✅ FIXED
+        return view('candidate.edit', compact('candidate'));
     }
 
     /**
-     * Candidate: Profile page
+     * Admin: Update Candidate
      */
-    public function profile()
+    public function update(Request $request, Candidate $candidate)
     {
-        $user = auth()->user();
-        $candidate = Candidate::where('email', $user->email)->first();
+        $candidate->update($request->all());
 
-        return view('candidate.profile', compact('user', 'candidate'));
+        return redirect()->route('candidates.index')
+            ->with('success', 'Candidate updated');
     }
 
     /**
-     * Candidate: Update profile
-     */
-    public function updateProfile(Request $request)
-    {
-        $request->validate([
-<<<<<<< HEAD
-            'name' => 'required',
-            'email' => 'required|email',
-            'phone' => 'nullable',
-            'address' => 'nullable',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
-=======
-            'name'          => 'required',
-            'email'         => 'required|email',
-            'phone'         => 'nullable',
-            'address'       => 'nullable',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'resume'        => 'nullable|mimes:pdf,doc,docx|max:2048',
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-        ]);
-
-        $user = auth()->user();
-        $oldEmail = $user->email;
-
-        // Update user
-        $user->update([
-<<<<<<< HEAD
-            'name' => $request->name,
-=======
-            'name'  => $request->name,
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-            'email' => $request->email,
-        ]);
-
-        // Find candidate using OLD email
-        $candidate = Candidate::where('email', $oldEmail)->first();
-
-        if (!$candidate) {
-            $candidate = Candidate::create([
-<<<<<<< HEAD
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-=======
-                'name'   => $request->name,
-                'email'  => $request->email,
-                'phone'  => $request->phone,
-                'address'=> $request->address,
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-                'status' => 'pending',
-            ]);
-        } else {
-            $candidate->update([
-<<<<<<< HEAD
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-=======
-                'name'    => $request->name,
-                'email'   => $request->email,
-                'phone'   => $request->phone,
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-                'address' => $request->address,
-            ]);
-        }
-
-        // Profile image
-        if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profiles', 'public');
-            $candidate->profile_image = $path;
-        }
-
-        // Resume
-        if ($request->hasFile('resume')) {
-<<<<<<< HEAD
-            $filename = time() . '_' . $request->resume->getClientOriginalName();
-=======
-            $filename = time().'_'.$request->resume->getClientOriginalName();
->>>>>>> 27f0eb8d9d09404577336b9cfa458d95344a0515
-            $request->resume->move(public_path('resumes'), $filename);
-            $candidate->resume = $filename;
-        }
-
-        $candidate->save();
-
-        return redirect()->route('candidate.dashboard')
-            ->with('success', 'Profile updated successfully');
-    }
-
-    /**
-     * Admin: Update candidate status
-     */
-    public function updateStatus(Request $request, Candidate $candidate)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,selected,rejected'
-        ]);
-
-        $candidate->update(['status' => $request->status]);
-
-        return back()->with('success', 'Status updated');
-    }
-
-    /**
-     * Admin: Delete candidate
+     * Admin: Delete Candidate
      */
     public function destroy(Candidate $candidate)
     {
+        if ($candidate->resume) {
+            @unlink(public_path('resumes/' . $candidate->resume));
+        }
+
         $candidate->delete();
 
-        return redirect()->route('candidates.index')
-            ->with('success', 'Candidate deleted');
+        return back()->with('success', 'Candidate deleted');
+    }
+
+    /**
+     * Admin: Update Status
+     */
+    public function updateStatus(Request $request, Candidate $candidate)
+    {
+        $candidate->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status updated');
     }
 }

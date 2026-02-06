@@ -7,20 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
 {
-    use HasFactory;
+   protected $fillable = [
+    'name',
+    'email',
+    'mobile',
+    'position',
+    'experience',
+    'current_company',
+    'notice_period',
+    'current_ctc',
+    'expected_ctc',
+    'location',
+    'resume',
+    'status',
+    'applied_at'
+];
 
-    protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'address',
-        'resume',
-        'profile_image',
-        'status',
-    ];
 
     public function interviews()
     {
-        return $this->hasMany(\App\Models\Interview::class);
+        return $this->hasMany(Interview::class);
     }
 }
