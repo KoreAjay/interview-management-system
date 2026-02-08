@@ -10,13 +10,14 @@ class Interview extends Model
     protected $fillable = [
         'candidate_id',
         'interviewer_id',
+        'round',
         'mode',
-        'meeting_link',
         'date',
         'time',
-        'round',
+        'meeting_link',
         'status'
     ];
+
 
     public function candidate()
     {

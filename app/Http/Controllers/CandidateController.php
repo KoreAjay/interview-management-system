@@ -11,11 +11,23 @@ class CandidateController extends Controller
     /**
      * Admin: List Candidates
      */
-    public function index()
-    {
-        $candidates = Candidate::where('status','pending')->latest()->get();
-        return view('candidate.index', compact('candidates'));
+public function index(Request $request)
+{
+    $query = Candidate::query();
+
+    if ($request->from && $request->to) {
+        $query->whereBetween('applied_at', [
+            $request->from,
+            $request->to
+        ]);
     }
+
+    $candidates = $query->latest()->get();
+
+    return view('candidates.index', compact('candidates'));
+}
+
+
 
     /**
      * Admin: Show Create Form

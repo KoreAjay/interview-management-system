@@ -18,42 +18,20 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-/*
-|--------------------------------------------------------------------------
-| Interview Routes (ADMIN)
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
-    // Interview list
-    Route::get('/interviews', [InterviewController::class, 'index'])
-        ->name('interviews.index');
-
-    // Schedule form (WITH candidate id)
     Route::get(
-        '/interviews/create/{candidate}',
-        [InterviewController::class, 'create']
-    )->name('interviews.create');
+        '/admin/dashboard',
+        [AdminController::class, 'dashboard']
+    )->name('admin.dashboard');
 
-
-    // Store
-    Route::post('/interviews/store', [InterviewController::class, 'store'])
-        ->name('interviews.store');
-});
-
-Route::middleware(['auth', 'role:admin'])->group(function () {
-
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-        ->name('admin.dashboard');
-
-    /* Candidate CRUD */
+    /* Candidates */
     Route::resource('candidates', CandidateController::class);
 
-    /* Interview Pages */
+    /* Interview Scheduling */
     Route::get(
         '/interviews',
         [InterviewController::class, 'index']
@@ -69,11 +47,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         [InterviewController::class, 'store']
     )->name('interviews.store');
 
+    /* FINAL RESULTS PAGE */
+    Route::get(
+        '/admin/results',
+        [AdminController::class, 'results']
+    )->name('admin.results');
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
-| Interviewer Routes
+| INTERVIEWER ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:interviewer'])->group(function () {
@@ -82,18 +67,23 @@ Route::middleware(['auth', 'role:interviewer'])->group(function () {
         return view('interviewer.dashboard');
     })->name('interviewer.dashboard');
 
-    /* Feedback */
-    Route::get('/feedback/{interview}', [FeedbackController::class, 'create'])
+    Route::get(
+        '/feedback/{interview}',
+        [FeedbackController::class, 'create']
+    )
         ->name('feedback.create');
 
-    Route::post('/feedback/{interview}', [FeedbackController::class, 'store'])
+    Route::post(
+        '/feedback/{interview}',
+        [FeedbackController::class, 'store']
+    )
         ->name('feedback.store');
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| Candidate Routes
+| CANDIDATE ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:candidate'])->group(function () {
@@ -104,11 +94,4 @@ Route::middleware(['auth', 'role:candidate'])->group(function () {
 
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| Auth Routes
-|--------------------------------------------------------------------------
-*/
 Auth::routes();
-

@@ -38,18 +38,20 @@ class InterviewController extends Controller
             'round' => 'required',
             'mode' => 'required',
             'date' => 'required|date',
-            'time' => 'required'
+            'time' => 'required',
+            'meeting_link' => 'nullable'
         ]);
 
-        Interview::create([
-            'candidate_id' => $request->candidate_id,
-            'interviewer_id' => $request->interviewer_id,
-            'round' => $request->round,
-            'mode' => $request->mode,
-            'date' => $request->date,
-            'time' => $request->time,
-            'status' => 'scheduled'
-        ]);
+            Interview::create([
+        'candidate_id'   => $request->candidate_id,
+        'interviewer_id' => $request->interviewer_id,
+        'round'          => $request->round,
+        'mode'           => $request->mode,
+        'meeting_link'   => $request->meeting_link, // ✅ SAVE
+        'date'           => $request->date,
+        'time'           => $request->time,
+        'status'         => 'scheduled'
+    ]);
 
         return redirect()
             ->route('interviews.index')
