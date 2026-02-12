@@ -21,38 +21,33 @@ Route::get('/', function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth','role:admin'])->group(function(){
 
-    Route::get(
-        '/admin/dashboard',
-        [AdminController::class, 'dashboard']
-    )->name('admin.dashboard');
+    Route::get('/admin/dashboard',
+        [AdminController::class,'dashboard'])
+        ->name('admin.dashboard');
 
     /* Candidates */
-    Route::resource('candidates', CandidateController::class);
+    Route::resource('candidates',
+        CandidateController::class);
 
-    /* Interview Scheduling */
-    Route::get(
-        '/interviews',
-        [InterviewController::class, 'index']
-    )->name('interviews.index');
+    /* Interviews */
+    Route::get('/interviews',
+        [InterviewController::class,'index'])
+        ->name('interviews.index');
 
-    Route::get(
-        '/interviews/create/{candidate}',
-        [InterviewController::class, 'create']
-    )->name('interviews.create');
+    Route::get('/interviews/create/{candidate}',
+        [InterviewController::class,'create'])
+        ->name('interviews.create');
 
-    Route::post(
-        '/interviews/store',
-        [InterviewController::class, 'store']
-    )->name('interviews.store');
+    Route::post('/interviews/store',
+        [InterviewController::class,'store'])
+        ->name('interviews.store');
 
-    /* FINAL RESULTS PAGE */
-    Route::get(
-        '/admin/results',
-        [AdminController::class, 'results']
-    )->name('admin.results');
-
+    /* Results */
+    Route::get('/admin/results',
+        [AdminController::class,'results'])
+        ->name('admin.results');
 });
 
 

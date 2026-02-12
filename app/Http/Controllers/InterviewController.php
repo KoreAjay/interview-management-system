@@ -11,12 +11,15 @@ use App\Models\User;
 class InterviewController extends Controller
 {
     /* Show Pending Candidates */
-    public function index()
-    {
-        $candidates = Candidate::where('status', 'pending')->get();
+public function index()
+{
+    // Show ONLY pending candidates
+    $candidates = Candidate::where('status','pending')->get();
 
-        return view('interviews.index', compact('candidates'));
-    }
+    return view('interviews.index', compact('candidates'));
+}
+
+
 
     /* Schedule Form */
     public function create($candidate_id)

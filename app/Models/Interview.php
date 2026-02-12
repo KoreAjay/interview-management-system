@@ -19,19 +19,19 @@ class Interview extends Model
     ];
 
 
-    public function candidate()
-    {
-        return $this->belongsTo(Candidate::class);
-    }
+public function candidate()
+{
+    return $this->belongsTo(Candidate::class);
+}
 
-    // interviewer = USER
-    public function interviewer()
-    {
-        return $this->belongsTo(User::class, 'interviewer_id');
-    }
+public function interviewer()
+{
+    return $this->belongsTo(User::class,'interviewer_id');
+}
 
-    public function feedback()
-    {
-        return $this->hasOne(Feedback::class);
-    }
+public function feedback()
+{
+    return $this->hasOne(Feedback::class);
+}
+
 }

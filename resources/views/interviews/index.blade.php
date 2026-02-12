@@ -35,7 +35,7 @@
         </div>
         <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
             <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Main Navigation</p>
-            <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-slate-500 rounded-xl font-semibold transition-all hover:bg-slate-50">
+            <a href={{ route('admin.dashboard') }} class="flex items-center px-4 py-2.5 text-slate-500 rounded-xl font-semibold transition-all hover:bg-slate-50">
                 <i class="bi bi-grid-1x2 mr-3 text-lg"></i> Dashboard
             </a>
             <a href="#" class="flex items-center px-4 py-2.5 bg-emerald-500 text-white rounded-xl font-semibold shadow-lg shadow-emerald-200">

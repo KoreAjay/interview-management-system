@@ -8,7 +8,7 @@ use App\Models\Interview;
 
 class AdminController extends Controller
 {
-    /* ================= DASHBOARD ================= */
+    /* DASHBOARD */
     public function dashboard()
     {
         return view('admin.dashboard', [
@@ -36,7 +36,7 @@ class AdminController extends Controller
         ]);
     }
 
-    /* ================= RESULTS ================= */
+    /* FINAL RESULTS */
     public function results(Request $request)
     {
         $query = Interview::with([
@@ -44,14 +44,11 @@ class AdminController extends Controller
             'interviewer',
             'feedback'
         ])
-        ->whereHas('candidate', function($q){
-            $q->whereIn('status',['selected','rejected']);
-        });
+        ->whereHas('feedback'); // Only completed feedback
 
-        /* FILTER */
         if($request->status){
-            $query->whereHas('candidate', function($q) use ($request){
-                $q->where('status',$request->status);
+            $query->whereHas('feedback', function($q) use ($request){
+                $q->where('result',$request->status);
             });
         }
 

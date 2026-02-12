@@ -90,7 +90,7 @@
 
         <!-- Sidebar Footer (Logout) -->
         <div class="p-4 border-t border-slate-100">
-            <form method="POST" action="/logout">
+            <form method="POST" action="{{ route('login') }}">
                 <button class="flex items-center w-full px-4 py-2.5 text-slate-500 hover:text-rose-600 rounded-xl transition-colors">
                     <i class="bi bi-box-arrow-left mr-3 text-lg"></i>
                     <span class="font-semibold text-sm">Sign Out</span>
