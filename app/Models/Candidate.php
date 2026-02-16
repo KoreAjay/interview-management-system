@@ -7,22 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Candidate extends Model
 {
-protected $fillable = [
-    'name',
-    'email',
-    'mobile',
-    'position',
-    'experience',
-    'current_company',
-    'notice_period',
-    'current_ctc',
-    'expected_ctc',
-    'location',
-    'resume',
-    'status',
-    'applied_at'
-];
+    use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'email',
+        'mobile',
+        'position',
+        'experience',
+        'current_company',
+        'notice_period',
+        'current_ctc',
+        'expected_ctc',
+        'location',
+        'resume',
+        'status',
+        'applied_at'
+    ];
+
+    /* RELATIONS */
 
     public function interviews()
     {

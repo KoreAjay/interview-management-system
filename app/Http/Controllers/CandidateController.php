@@ -5,119 +5,194 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
-    /**
-     * Admin: List Candidates
-     */
-public function index(Request $request)
-{
-    $query = Candidate::query();
+    /* =========================
+       INDEX
+    ==========================*/
+    public function index(Request $request)
+    {
+        $availablePositions = Candidate::distinct()
+            ->whereNotNull('position')
+            ->pluck('position')
+            ->sort();
 
-    if ($request->from && $request->to) {
-        $query->whereBetween('applied_at', [
-            $request->from,
-            $request->to
-        ]);
+        $query = Candidate::query();
+
+        // Search
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Filters
+        if ($request->filled('position')) {
+            $query->where('position', $request->position);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $candidates = $query->latest()->get();
+
+        return view('candidates.index', compact(
+            'candidates',
+            'availablePositions'
+        ));
     }
 
-    $candidates = $query->latest()->get();
 
-    return view('candidates.index', compact('candidates'));
-}
-
-
-
-    /**
-     * Admin: Show Create Form
-     */
+    /* =========================
+       CREATE
+    ==========================*/
     public function create()
     {
+        // MUST be plural (resource standard)
         return view('candidate.create');
     }
 
-    /**
-     * Admin: Store Candidate
-     */
-   public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:candidates,email',
-    ]);
 
-    $resumeName = null;
-
-    if ($request->hasFile('resume')) {
-        $resumeName = time().'.'.$request->resume->extension();
-        $request->resume->move(public_path('resumes'), $resumeName);
-    }
-
-    Candidate::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'mobile' => $request->mobile,
-        'position' => $request->position,
-        'experience' => $request->experience,
-        'current_company' => $request->current_company,
-        'notice_period' => $request->notice_period,
-        'current_ctc' => $request->current_ctc,
-        'expected_ctc' => $request->expected_ctc,
-        'location' => $request->location,
-        'resume' => $resumeName,
-        'status' => 'pending',
-        'applied_at' => now(),
-    ]);
-
-    return redirect()
-        ->route('candidates.index')
-        ->with('success','Candidate Added Successfully');
-}
-
-    
-    /**
-     * Admin: Edit Candidate
-     */
-    public function edit(Candidate $candidate)
+    /* =========================
+       STORE
+    ==========================*/
+    public function store(Request $request)
     {
-        return view('candidate.edit', compact('candidate'));
-    }
+        $request->validate([
+            'name'   => 'required',
+            'email'  => 'required|email|unique:candidates,email',
+            'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
+        ]);
 
-    /**
-     * Admin: Update Candidate
-     */
-    public function update(Request $request, Candidate $candidate)
-    {
-        $candidate->update($request->all());
+        $data = $request->all();
 
-        return redirect()->route('candidates.index')
-            ->with('success', 'Candidate updated');
-    }
-
-    /**
-     * Admin: Delete Candidate
-     */
-    public function destroy(Candidate $candidate)
-    {
-        if ($candidate->resume) {
-            @unlink(public_path('resumes/' . $candidate->resume));
+        // Upload Resume
+        if ($request->hasFile('resume')) {
+            $data['resume'] = $request
+                ->file('resume')
+                ->store('resumes', 'public');
         }
 
-        $candidate->delete();
+        $data['status'] = 'pending';
 
-        return back()->with('success', 'Candidate deleted');
+        Candidate::create($data);
+
+        return redirect()
+            ->route('candidates.index')
+            ->with('success', 'Candidate Added Successfully');
     }
 
-    /**
-     * Admin: Update Status
-     */
+
+    /* =========================
+       SHOW
+    ==========================*/
+    public function show(Candidate $candidate)
+    {
+        return view('candidates.show', compact('candidate'));
+    }
+
+
+    /* =========================
+       EDIT
+    ==========================*/
+    public function edit(Candidate $candidate)
+    {
+        return view('candidates.edit', compact('candidate'));
+    }
+
+
+    /* =========================
+       UPDATE
+    ==========================*/
+    public function update(Request $request, Candidate $candidate)
+    {
+        $data = $request->all();
+
+        if ($request->hasFile('resume')) {
+
+            // Delete old resume safely
+            if ($candidate->resume &&
+                Storage::disk('public')->exists($candidate->resume)) {
+
+                Storage::disk('public')->delete($candidate->resume);
+            }
+
+            $data['resume'] = $request
+                ->file('resume')
+                ->store('resumes', 'public');
+        }
+
+        $candidate->update($data);
+
+        return redirect()
+            ->route('candidates.index')
+            ->with('success', 'Candidate Updated Successfully');
+    }
+
+
+    /* =========================
+       DELETE
+    ==========================*/
+    public function destroy(Candidate $candidate)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // Delete Resume File
+            if ($candidate->resume &&
+                Storage::disk('public')->exists($candidate->resume)) {
+
+                Storage::disk('public')->delete($candidate->resume);
+            }
+
+            // Delete Feedback → Interviews → Candidate
+            foreach ($candidate->interviews as $interview) {
+                $interview->feedback()->delete();
+            }
+
+            $candidate->interviews()->delete();
+            $candidate->delete();
+
+            DB::commit();
+
+            return back()->with(
+                'success',
+                'Candidate, Interviews & Feedback deleted successfully'
+            );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()->with(
+                'error',
+                'Delete failed: ' . $e->getMessage()
+            );
+        }
+    }
+
+
+    /* =========================
+       STATUS UPDATE
+    ==========================*/
     public function updateStatus(Request $request, Candidate $candidate)
     {
         $candidate->update([
             'status' => $request->status
         ]);
 
-        return back()->with('success', 'Status updated');
+        return back()->with(
+            'success',
+            'Status updated to ' . ucfirst($request->status)
+        );
     }
 }

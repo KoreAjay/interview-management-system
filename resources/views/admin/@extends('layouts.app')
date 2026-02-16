@@ -1,49 +1,207 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
 
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Interview Feedback</h5>
+<div class="min-h-screen bg-[#fcfcfd] py-10 px-6">
+
+    <div class="max-w-4xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-10">
+
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                    Interview Feedback
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Submit candidate evaluation & hiring decision
+                </p>
+            </div>
+
+            <a href="{{ url()->previous() }}"
+               class="px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow">
+                ← Back
+            </a>
+
         </div>
 
-        <div class="card-body">
-            <p><strong>Candidate:</strong> {{ $interview->candidate->name }}</p>
-            <p><strong>Round:</strong> {{ ucfirst($interview->round) }}</p>
 
-            <form method="POST" action="{{ route('feedback.store', $interview->id) }}">
+        <!-- GLASS CARD -->
+        <div class="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-slate-200 shadow-sm p-10">
+
+            <!-- Candidate Info Banner -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-10">
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+                    <div>
+                        <p class="info-label">Candidate Name</p>
+                        <p class="info-value">
+                            {{ $interview->candidate->name }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="info-label">Interview Round</p>
+                        <p class="info-value">
+                            {{ ucfirst($interview->round) }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+            <form method="POST"
+                  action="{{ route('feedback.store',$interview->id) }}"
+                  class="space-y-10">
+
                 @csrf
 
-                <div class="mb-3">
-                    <label class="form-label">Rating (1–5)</label>
-                    <select name="rating" class="form-select" required>
-                        <option value="">Select</option>
+
+                <!-- RATING -->
+                <div>
+
+                    <h3 class="section-title">
+                        Candidate Rating
+                    </h3>
+
+                    <select name="rating"
+                            required
+                            class="form-input mt-4 max-w-xs">
+
+                        <option value="">Select Rating</option>
+
                         @for($i=1;$i<=5;$i++)
-                            <option value="{{ $i }}">{{ $i }}</option>
+                            <option value="{{ $i }}">
+                                ⭐ {{ $i }} / 5
+                            </option>
                         @endfor
+
                     </select>
+
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Result</label>
-                    <select name="result" class="form-select" required>
+
+
+                <!-- RESULT -->
+                <div>
+
+                    <h3 class="section-title">
+                        Interview Result
+                    </h3>
+
+                    <select name="result"
+                            required
+                            class="form-input mt-4 max-w-xs">
+
                         <option value="selected">Selected</option>
                         <option value="rejected">Rejected</option>
+
                     </select>
+
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Remarks</label>
-                    <textarea name="remarks" class="form-control" rows="3"></textarea>
+
+
+                <!-- REMARKS -->
+                <div>
+
+                    <h3 class="section-title">
+                        Interview Remarks
+                    </h3>
+
+                    <textarea name="remarks"
+                              rows="4"
+                              placeholder="Write strengths, weaknesses, recommendations..."
+                              class="form-input mt-4"></textarea>
+
                 </div>
 
-                <button class="btn btn-success">
-                    Submit Feedback
-                </button>
+
+
+                <!-- ACTION -->
+                <div class="flex justify-end pt-6 border-t">
+
+                    <button type="submit"
+                        class="save-btn">
+
+                        Submit Feedback
+
+                    </button>
+
+                </div>
+
             </form>
+
         </div>
+
     </div>
 
 </div>
+
+
+
+<!-- STYLES -->
+<style>
+
+.section-title{
+    font-size:13px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#64748b;
+}
+
+.info-label{
+    font-size:11px;
+    font-weight:800;
+    color:#94a3b8;
+    text-transform:uppercase;
+    margin-bottom:4px;
+}
+
+.info-value{
+    font-size:15px;
+    font-weight:800;
+    color:#0f172a;
+}
+
+.form-input{
+    width:100%;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    padding:12px 14px;
+    border-radius:14px;
+    font-size:13px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.form-input:focus{
+    outline:none;
+    border-color:#10b981;
+    box-shadow:0 0 0 3px rgba(16,185,129,.15);
+    background:white;
+}
+
+.save-btn{
+    background:#10b981;
+    color:white;
+    padding:12px 26px;
+    border-radius:14px;
+    font-size:12px;
+    font-weight:900;
+    box-shadow:0 8px 20px rgba(16,185,129,.25);
+    transition:.2s;
+}
+
+.save-btn:hover{
+    background:#059669;
+}
+
+</style>
+
 @endsection

@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Softmatric | Interviewer Dashboard</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -12,273 +11,267 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-
-        .hero-gradient {
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .bg-mesh {
             background-image: 
-                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(51, 65, 85, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(51, 65, 85, 0.03) 0px, transparent 50%);
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
+        .card-pro {
+            background: #ffffff;
             border: 1px solid rgba(226, 232, 240, 0.8);
-            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            border-radius: 1.25rem;
         }
 
-        .interviewer-header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 2rem;
-            position: relative;
-            overflow: hidden;
+        .btn-primary-pro {
+            @apply flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white text-[11px] font-bold uppercase tracking-wider rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200/50 active:scale-95;
         }
 
-        .table-row {
-            @apply border-b border-slate-100 hover:bg-slate-50/80 transition-all duration-200 cursor-default;
+        /* Ghost Button for Profile */
+        .btn-ghost-pro {
+            @apply flex items-center justify-center gap-2 px-3 py-1.5 border border-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-all active:scale-95;
         }
 
-        .badge-pill {
-            @apply px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border;
+        .tr-hover:hover {
+            background-color: rgba(248, 250, 252, 1);
         }
 
-        .badge-completed { @apply bg-emerald-50 text-emerald-600 border-emerald-100; }
-        .badge-scheduled { @apply bg-amber-50 text-amber-600 border-amber-100; }
-
-        .stat-card {
-            @apply glass-card p-6 border-slate-200/60 shadow-xl flex flex-col items-center justify-center text-center group hover:translate-y-[-4px] transition-all duration-300;
+        .url-chip {
+            @apply flex items-center gap-2 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-mono text-slate-500 cursor-pointer hover:border-emerald-400 hover:text-emerald-600 transition-all;
         }
 
-        .btn-feedback {
-            @apply bg-slate-900 text-white hover:bg-emerald-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 active:scale-95;
-        }
-
-        /* Profile Dropdown Simulation */
-        .profile-trigger:hover .logout-popover {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .logout-popover {
-            opacity: 0;
+        /* Toast Animation */
+        #toast {
             visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.2s ease;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #0f172a;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
-<body class="antialiased hero-gradient min-h-screen">
+<body class="antialiased bg-mesh min-h-screen">
 
-    <!-- Navbar -->
-    <nav class="fixed w-full z-50 top-0 bg-white/70 backdrop-blur-lg border-b border-slate-200/50">
+    <div id="toast"><i class="bi bi-check-circle-fill text-emerald-400 mr-2"></i> Link Copied to Clipboard</div>
+
+    <nav class="fixed w-full z-50 top-0 bg-white/70 backdrop-blur-xl border-b border-slate-200/60">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-3 group cursor-pointer" onclick="window.location='/'">
-                <div class="bg-slate-900 p-2 rounded-xl group-hover:bg-emerald-500 transition-all duration-300">
-                    <i class="bi bi-cpu text-white text-xl"></i>
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-600 p-2.5 rounded-xl shadow-md">
+                    <i class="bi bi-person-video3 text-white text-lg"></i>
                 </div>
-                <span class="text-2xl font-extrabold tracking-tight text-slate-900">Soft<span class="text-emerald-500">matric</span></span>
+                <div class="flex flex-col">
+                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Soft<span class="text-emerald-600">matric</span></span>
+                </div>
             </div>
 
             <div class="flex items-center gap-6">
-                <span class="hidden sm:block text-[10px] font-black uppercase tracking-widest text-slate-400">Interviewer Access</span>
-                
-                <!-- Profile & Logout Dropdown -->
-                <div class="relative profile-trigger py-4">
-                    <button class="flex items-center gap-3 bg-white border border-slate-200 pl-2 pr-4 py-1.5 rounded-2xl hover:border-emerald-500 transition-colors shadow-sm">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </div>
-                        <div class="text-left hidden md:block">
-                            <p class="text-xs font-bold text-slate-900 leading-none mb-1">{{ auth()->user()->name }}</p>
-                            <p class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Active Now</p>
-                        </div>
-                        <i class="bi bi-chevron-down text-slate-400 text-[10px] ml-1"></i>
-                    </button>
-
-                    <!-- Logout Popover -->
-                    <div class="logout-popover absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-2xl p-2 overflow-hidden">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-colors text-sm font-bold">
-                                <i class="bi bi-box-arrow-right text-lg"></i>
-                                Sign Out
-                            </button>
-                        </form>
-                    </div>
+                <div class="hidden sm:flex flex-col items-end">
+                    <p class="text-xs font-bold text-slate-900 leading-none mb-1">{{ auth()->user()->name }}</p>
+                    <p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Authorized Access</p>
                 </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="p-2.5 bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all border border-slate-200">
+                        <i class="bi bi-box-arrow-right text-lg"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto pt-32 pb-20 px-6">
-        
-        <!-- Header Section -->
-        <div class="interviewer-header p-8 md:p-12 mb-10 text-white shadow-2xl relative">
-            <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                <i class="bi bi-mic-fill text-9xl"></i>
+
+        @php
+            $user = auth()->user();
+            $interviews = \App\Models\Interview::with('candidate')
+                ->where('interviewer_id', $user->id)
+                ->latest()
+                ->get();
+            $pendingCount = $interviews->where('status','scheduled')->count();
+        @endphp
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Pipeline Control</h1>
+                <p class="text-slate-500 text-sm mt-1">Review profiles, launch meetings, and submit evaluations.</p>
             </div>
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-white mb-4">
-                        <i class="bi bi-lightning-charge-fill"></i> Activity Overview
-                    </div>
-                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Welcome back, {{ auth()->user()->name }} 👋</h1>
-                    <p class="text-emerald-50 max-w-lg text-sm leading-relaxed">
-                        Ready for today's sessions? Review your assigned candidates and submit your feedback scores directly below.
-                    </p>
-                </div>
-                <div class="hidden lg:block bg-white/10 p-4 rounded-3xl backdrop-blur-sm border border-white/10">
-                    <div class="flex items-center gap-4">
-                        <div class="text-right">
-                            <p class="text-[10px] font-black uppercase text-emerald-200 tracking-widest">Today's Date</p>
-                            <p class="text-lg font-bold">{{ date('D, M d Y') }}</p>
-                        </div>
-                        <i class="bi bi-calendar-event text-3xl text-white/50"></i>
-                    </div>
-                </div>
+            
+            <div class="relative w-full md:w-96">
+                <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="tableSearch" placeholder="Search by name or email..." 
+                    class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all text-sm font-medium shadow-sm">
             </div>
         </div>
 
-       @php
-    $user = auth()->user();
-
-    $interviews = \App\Models\Interview::with('candidate')
-        ->where('interviewer_id', $user->id)
-        ->latest()
-        ->get();
-@endphp
-
-
-        <!-- Quick Summary Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-            
-            <div class="stat-card">
-                <i class="bi bi-calendar4-week text-2xl text-slate-300 mb-3"></i>
-                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Assignments</span>
-                <h3 class="text-3xl font-black text-slate-900">{{ $interviews->count() }}</h3>
-                <div class="w-8 h-1 bg-slate-100 rounded-full mt-3 group-hover:bg-slate-900 transition-colors"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="card-pro p-6 bg-slate-900 text-white border-none">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Assigned</p>
+                <h3 class="text-3xl font-extrabold">{{ $interviews->count() }}</h3>
             </div>
-
-            <div class="stat-card">
-                <i class="bi bi-hourglass-split text-2xl text-amber-400 mb-3"></i>
-                <span class="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1">Pending Feedback</span>
-                <h3 class="text-3xl font-black text-slate-900">{{ $interviews->where('status','scheduled')->count() }}</h3>
-                <div class="w-8 h-1 bg-amber-100 rounded-full mt-3 group-hover:bg-amber-500 transition-colors"></div>
+            <div class="card-pro p-6 border-l-4 border-l-amber-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending Sessions</p>
+                <h3 class="text-3xl font-extrabold text-slate-900">{{ $pendingCount }}</h3>
             </div>
-
-            <div class="stat-card">
-                <i class="bi bi-check2-circle text-2xl text-emerald-400 mb-3"></i>
-                <span class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-1">Reviews Completed</span>
-                <h3 class="text-3xl font-black text-slate-900">{{ $interviews->where('status','completed')->count() }}</h3>
-                <div class="w-8 h-1 bg-emerald-100 rounded-full mt-3 group-hover:bg-emerald-500 transition-colors"></div>
+            <div class="card-pro p-6 border-l-4 border-l-emerald-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Completed Evaluations</p>
+                <h3 class="text-3xl font-extrabold text-slate-900">{{ $interviews->where('status','completed')->count() }}</h3>
             </div>
         </div>
 
-        <!-- Schedule Table -->
-        <div class="glass-card shadow-2xl border-slate-200/60 overflow-hidden">
-            <div class="px-8 py-6 border-b border-slate-100 bg-white/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h3 class="font-extrabold text-slate-900 text-base">My Interview Schedule</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Real-time update of your evaluation pipeline</p>
-                </div>
-                <div class="px-4 py-2 bg-slate-900 rounded-xl">
-                    <span class="text-[10px] font-black text-white uppercase tracking-widest">Active Pool: {{ $interviews->count() }}</span>
+        <div class="card-pro overflow-hidden">
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Session Schedule</h3>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Live Update Active</span>
                 </div>
             </div>
-            
+
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left" id="interviewTable">
                     <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100">
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate Information</th>
-                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Evaluation Round</th>
-                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Session Date</th>
-                            <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                            <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                        <tr class="bg-white">
+                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate Info</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Round Details</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Meeting Access</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status</th>
+                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action Hub</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50">
+                    <tbody class="divide-y divide-slate-100">
                         @forelse($interviews as $interview)
-                            <tr class="table-row group">
-                                <td class="px-8 py-6">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-black text-sm">
-                                            {{ strtoupper(substr($interview->candidate->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-slate-900 mb-0.5">{{ $interview->candidate->name }}</p>
-                                            <p class="text-xs text-slate-400 font-medium">{{ $interview->candidate->email }}</p>
-                                        </div>
+                        <tr class="tr-hover transition-all duration-200">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm border border-slate-200">
+                                        {{ strtoupper(substr($interview->candidate->name, 0, 1)) }}
                                     </div>
-                                </td>
-                                <td class="px-6 py-6">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                        <span class="text-xs font-black text-slate-600 uppercase tracking-tight">{{ $interview->round }}</span>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900 leading-none name-val">{{ $interview->candidate->name }}</p>
+                                        <p class="text-[11px] text-slate-400 mt-1 mb-2 email-val">{{ $interview->candidate->email }}</p>
+                                        
+                                      <a href="{{ route('interviewer.candidate.show', $interview->candidate->id) }}" class="btn-ghost-pro">
+    <i class="bi bi-eye"></i> View Profile
+</a>
+   
                                     </div>
-                                </td>
-                                <td class="px-6 py-6">
-                                    <div class="text-sm font-bold text-slate-900">
-                                        {{ \Carbon\Carbon::parse($interview->date)->format('d M Y') }}
+                                </div>
+                            </td>
+
+                            <td class="px-6 py-5">
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded">{{ $interview->round }}</span>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-2">
+                                    <i class="bi bi-calendar-event mr-1"></i> {{ \Carbon\Carbon::parse($interview->date)->format('d M, Y') }}
+                                </p>
+                            </td>
+
+                            <td class="px-6 py-5">
+                                @if($interview->status === 'scheduled')
+                                <div class="flex flex-col items-center gap-2">
+                                    <a href="{{ $interview->meeting_link }}" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-bold uppercase rounded-lg hover:bg-emerald-700 transition-all">
+                                        <i class="bi bi-camera-video-fill"></i> Launch Meeting
+                                    </a>
+                                    <div class="url-chip w-full" onclick="copyToClipboard('{{ $interview->interview_link }}')">
+                                        <i class="bi bi-link-45deg"></i>
+                                        <span class="truncate max-w-[80px]">{{ $interview->interview_link }}</span>
                                     </div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase mt-1">Confirmed Slot</div>
-                                </td>
-                                <td class="px-6 py-6">
-                                    <span class="badge-pill {{ $interview->status === 'completed' ? 'badge-completed' : 'badge-scheduled' }}">
-                                        {{ $interview->status }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-6 text-right">
-                                    @if($interview->status === 'scheduled')
-                                        <a href="{{ url('/feedback/'.$interview->id) }}" class="btn-feedback inline-flex ml-auto">
-                                            <i class="bi bi-chat-left-text"></i> Give Feedback
-                                        </a>
-                                    @else
-                                        <div class="flex items-center justify-end gap-2 text-emerald-600 font-bold text-[10px] uppercase tracking-widest">
-                                            <i class="bi bi-check-all text-lg"></i> Submitted
-                                        </div>
-                                    @endif
-                                </td>
-                            </tr>
+                                </div>
+                                @else
+                                <div class="text-center">
+                                    <span class="text-[10px] font-bold text-slate-300 uppercase italic">Link Expired</span>
+                                </div>
+                                @endif
+                            </td>
+
+                            <td class="px-6 py-5 text-center">
+                                @if($interview->status === 'completed')
+                                <span class="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase">Complete</span>
+                                @else
+                                <span class="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[9px] font-black uppercase">Upcoming</span>
+                                @endif
+                            </td>
+
+                            <td class="px-8 py-5 text-right">
+                                @if($interview->status === 'scheduled')
+                                <a href="{{ url('/feedback/'.$interview->id) }}" class="btn-primary-pro inline-flex">
+                                    Score Candidate
+                                </a>
+                                @else
+                                <div class="flex items-center justify-end gap-2 text-emerald-600 font-bold text-[10px] uppercase">
+                                    <i class="bi bi-check-circle-fill text-lg"></i> Evaluated
+                                </div>
+                                @endif
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-20 text-center">
-                                    <div class="max-w-xs mx-auto space-y-4">
-                                        <div class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-200 text-4xl mx-auto border border-slate-100 shadow-inner">
-                                            <i class="bi bi-journal-x"></i>
-                                        </div>
-                                        <div>
-                                            <h4 class="text-slate-900 font-black text-sm uppercase tracking-wider">No Assignments Found</h4>
-                                            <p class="text-slate-400 text-xs font-medium mt-1">You don't have any interviews scheduled at the moment. Take a break!</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
                         @endforelse
                     </tbody>
                 </table>
+                
+                <div id="noResults" class="hidden py-20 text-center">
+                    <i class="bi bi-search text-4xl text-slate-200"></i>
+                    <p class="text-slate-400 font-bold text-xs mt-4 uppercase">No matching candidates found</p>
+                </div>
             </div>
-            
-            <div class="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center gap-3">
-                <i class="bi bi-info-circle text-emerald-500"></i>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                    Reminder: Please submit feedback within 24 hours of session completion.
-                </p>
-            </div>
-        </div>
-
-        <div class="mt-12 text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">Interview Management System &copy; {{ date('Y') }}</p>
         </div>
     </main>
 
-    <footer class="bg-slate-900 text-white pt-20 pb-12 px-6">
-        <div class="max-w-7xl mx-auto text-center border-t border-slate-800 pt-12">
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">&copy; 2026 Softmatric Technologies. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <script>
+        // Search Filter
+        document.getElementById('tableSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#interviewTable tbody tr');
+            let hasVisibleRow = false;
+
+            rows.forEach(row => {
+                let name = row.querySelector('.name-val').textContent.toLowerCase();
+                let email = row.querySelector('.email-val').textContent.toLowerCase();
+                if (name.includes(filter) || email.includes(filter)) {
+                    row.style.display = "";
+                    hasVisibleRow = true;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+            document.getElementById('noResults').classList.toggle('hidden', hasVisibleRow);
+        });
+
+        // Copy Clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                let toast = document.getElementById("toast");
+                toast.className = "show";
+                setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+            });
+        }
+    </script>
 
 </body>
 </html>
